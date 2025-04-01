@@ -1,14 +1,15 @@
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class DAN(nn.Module):
 
-    def __init__(self,
-                 emb_dim=100,
-                 hidden_dim=256,
-                 dp=0.3,):
+class DAN(nn.Module):
+    def __init__(
+        self,
+        emb_dim=100,
+        hidden_dim=256,
+        dp=0.3,
+    ):
         super(DAN, self).__init__()
 
         self.dropout1 = nn.Dropout(dp)
@@ -25,8 +26,6 @@ class DAN(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
-
-
         x = x.mean(dim=1)
 
         x = self.dropout1(x)
@@ -46,7 +45,6 @@ class DAN(nn.Module):
         return x
 
 
-
 class CNN(nn.Module):
     """
     A CNN for text classification.
@@ -56,12 +54,16 @@ class CNN(nn.Module):
     def __init__(self, embedding_dim, hidden_dim):
         super(CNN, self).__init__()
 
-
         in_channel = 1
 
         kernel_sizes = [7, 7, 5, 5]
 
-        self.conv = nn.ModuleList([nn.Conv2d(in_channel, hidden_dim, (K, embedding_dim)) for K in kernel_sizes])
+        self.conv = nn.ModuleList(
+            [
+                nn.Conv2d(in_channel, hidden_dim, (K, embedding_dim))
+                for K in kernel_sizes
+            ]
+        )
 
         self.dropout = nn.Dropout(0.3)
         self.fc = nn.Linear(len(kernel_sizes) * hidden_dim, hidden_dim)

@@ -1,4 +1,15 @@
-from pyparsing import Literal, Word, alphas, Optional, OneOrMore, Forward, Group, oneOf, nums, ParserElement
+from pyparsing import (
+    Literal,
+    Word,
+    alphas,
+    Optional,
+    OneOrMore,
+    Forward,
+    Group,
+    oneOf,
+    nums,
+    ParserElement,
+)
 from pydash import flatten_deep
 
 ParserElement.enablePackrat()
@@ -8,8 +19,9 @@ ParserElement.enablePackrat()
 WildCards = oneOf("$ % &")
 LeafWord = WildCards | Word(alphas + "'`")
 # aaa+ aaa* aaa? aaa{0,3} aaa{2}
-RangedQuantifiers = Literal("{") + Word(nums) + Optional(
-    Literal(",") + Word(nums)) + Literal("}")
+RangedQuantifiers = (
+    Literal("{") + Word(nums) + Optional(Literal(",") + Word(nums)) + Literal("}")
+)
 Quantifiers = oneOf("* + ?") | RangedQuantifiers
 QuantifiedLeafWord = LeafWord + Quantifiers
 # a sequence
@@ -24,15 +36,24 @@ QuantifiedGroup = GroupStatement + Quantifiers
 CaptureGroupStatement = Forward()
 # xxx | yyy
 orAbleStatement = QuantifiedGroup | GroupStatement | ConcatenatedSequence
-OrStatement = Group(orAbleStatement +
-                    OneOrMore(Literal("|") + Group(orAbleStatement)))
+OrStatement = Group(orAbleStatement + OneOrMore(Literal("|") + Group(orAbleStatement)))
 
 GroupStatement << Group(Literal("(") + Rule + Literal(")"))
-CaptureGroupStatement << Group(Literal("(") + Literal("?") + Literal("<") + Word(alphas) + Literal(">")+ Rule + Literal(")"))
+CaptureGroupStatement << Group(
+    Literal("(")
+    + Literal("?")
+    + Literal("<")
+    + Word(alphas)
+    + Literal(">")
+    + Rule
+    + Literal(")")
+)
 Rule << OneOrMore(OrStatement | orAbleStatement | CaptureGroupStatement)
+
 
 def ruleParser(ruleString):
     return flatten_deep(Rule.parseString(ruleString).asList())
+
 
 if __name__ == "__main__":
     # ruleString = "$ * ( can' t | can't ) & * $? talk (&|$)*)"

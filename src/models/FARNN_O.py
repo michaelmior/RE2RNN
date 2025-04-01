@@ -20,8 +20,12 @@ class FSAIntegrateOnehot(nn.Module):
 
         V, S, S = fsa_tensor.shape
         self.S = S
-        self.h0 = self.hidden_init() # S hidden state dim should be equal to the state dim
-        self.fsa_tensor = nn.Parameter(torch.from_numpy(fsa_tensor).float(), requires_grad=True) # V x S x S
+        self.h0 = (
+            self.hidden_init()
+        )  # S hidden state dim should be equal to the state dim
+        self.fsa_tensor = nn.Parameter(
+            torch.from_numpy(fsa_tensor).float(), requires_grad=True
+        )  # V x S x S
 
     def forward(self, input, lengths):
         """
@@ -37,20 +41,24 @@ class FSAIntegrateOnehot(nn.Module):
         :return all hidden state B x L x S:
         """
 
-        B, L = input.size() # B x L
-        hidden = self.h0.unsqueeze(0).repeat(B, 1) # B x S
-        all_hidden = torch.zeros((B, L, self.S)).cuda() if self.is_cuda else torch.zeros((B, L, self.S))
+        B, L = input.size()  # B x L
+        hidden = self.h0.unsqueeze(0).repeat(B, 1)  # B x S
+        all_hidden = (
+            torch.zeros((B, L, self.S)).cuda()
+            if self.is_cuda
+            else torch.zeros((B, L, self.S))
+        )
 
         for i in range(L):
-            inp = input[:, i] # B
-            Tr = self.fsa_tensor[inp] # B x S x S
-            hidden = torch.einsum('bs,bsj->bj', hidden, Tr) # B x R, B x R -> B x R
+            inp = input[:, i]  # B
+            Tr = self.fsa_tensor[inp]  # B x S x S
+            hidden = torch.einsum("bs,bsj->bj", hidden, Tr)  # B x R, B x R -> B x R
             all_hidden[:, i, :] = hidden
 
         return all_hidden
 
     def maxmul(self, hidden, transition):
-        temp = torch.einsum('bs,bsj->bsj', hidden, transition)
+        temp = torch.einsum("bs,bsj->bsj", hidden, transition)
         max_val, _ = torch.max(temp, dim=1)
         return max_val
 
@@ -67,13 +75,17 @@ class FSAIntegrateOnehot(nn.Module):
         need to deal with mask lengths
         :return all hidden state B x L x S:
         """
-        B, L = input.size() # B x L
-        hidden = self.h0.unsqueeze(0).repeat(B, 1) # B x S
-        all_hidden = torch.zeros((B, L, self.S)).cuda() if self.is_cuda else torch.zeros((B, L, self.S))
+        B, L = input.size()  # B x L
+        hidden = self.h0.unsqueeze(0).repeat(B, 1)  # B x S
+        all_hidden = (
+            torch.zeros((B, L, self.S)).cuda()
+            if self.is_cuda
+            else torch.zeros((B, L, self.S))
+        )
 
         for i in range(L):
-            inp = input[:, i] # B
-            Tr = self.fsa_tensor[inp] # B x S x S
+            inp = input[:, i]  # B
+            Tr = self.fsa_tensor[inp]  # B x S x S
             hidden = self.maxmul(hidden, Tr)  # B x S,  B x S x S  -> B x S
             all_hidden[:, i, :] = hidden
 
@@ -87,19 +99,22 @@ class FSAIntegrateOnehot(nn.Module):
 
 
 class IntentIntegrateOnehot(nn.Module):
-    def __init__(self, fsa_tensor, config=None,
-                mat=None, bias=None, is_cuda=True):
+    def __init__(self, fsa_tensor, config=None, mat=None, bias=None, is_cuda=True):
         super(IntentIntegrateOnehot, self).__init__()
 
-        self.fsa_rnn =  FSAIntegrateOnehot(fsa_tensor, is_cuda)
-        self.mat = nn.Parameter(torch.from_numpy(mat).float(), requires_grad=bool(config.train_linear))
-        self.bias = nn.Parameter(torch.from_numpy(bias).float(), requires_grad=bool(config.train_linear))
+        self.fsa_rnn = FSAIntegrateOnehot(fsa_tensor, is_cuda)
+        self.mat = nn.Parameter(
+            torch.from_numpy(mat).float(), requires_grad=bool(config.train_linear)
+        )
+        self.bias = nn.Parameter(
+            torch.from_numpy(bias).float(), requires_grad=bool(config.train_linear)
+        )
         self.clamp_score = bool(config.clamp_score)
         self.clamp_hidden = bool(config.clamp_hidden)
         self.wfa_type = config.wfa_type
 
     def forward(self, input, lengths):
-        if self.wfa_type == 'viterbi':
+        if self.wfa_type == "viterbi":
             out = self.fsa_rnn.viterbi(input, lengths)
         else:
             out = self.fsa_rnn.forward(input, lengths)

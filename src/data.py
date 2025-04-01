@@ -9,25 +9,21 @@ from src.rules.tensor_func import tensor3_to_factors
 import time
 import argparse
 
-class ATISIntentDataset(Dataset):
 
+class ATISIntentDataset(Dataset):
     def __init__(self, query, intent):
         assert len(query) == len(intent)
         self.dataset = query
         self.intent = intent
 
     def __getitem__(self, idx):
-        return {
-            'x':self.dataset[idx],
-            'i':self.intent[idx]
-        }
+        return {"x": self.dataset[idx], "i": self.intent[idx]}
 
     def __len__(self):
         return len(self.dataset)
 
 
 class ATISIntentBatchDataset(Dataset):
-
     def __init__(self, query, lengths, intent, shots=None):
         assert len(query) == len(intent)
         if (not shots) or (shots > len(query)):
@@ -42,11 +38,10 @@ class ATISIntentBatchDataset(Dataset):
             self.lengths = list(np.array(lengths)[idxs])
 
     def __getitem__(self, idx):
-
         return {
-            'x': np.array(self.dataset[idx]),
-            'i': np.array(self.intent[idx]),
-            'l': np.array(self.lengths[idx])
+            "x": np.array(self.dataset[idx]),
+            "i": np.array(self.intent[idx]),
+            "l": np.array(self.lengths[idx]),
         }
 
     def __len__(self):
@@ -54,7 +49,6 @@ class ATISIntentBatchDataset(Dataset):
 
 
 class ATISIntentBatchDatasetBidirection(Dataset):
-
     def __init__(self, query, query_inverse, lengths, intent, shots=None):
         assert len(query) == len(intent)
         if (not shots) or (shots > len(query)):
@@ -70,20 +64,21 @@ class ATISIntentBatchDatasetBidirection(Dataset):
             self.lengths = list(np.array(lengths)[idxs])
 
     def __getitem__(self, idx):
-
         return {
-            'x_forward': np.array(self.dataset[idx]),
-            'x_backward': np.array(self.dataset_inverse[idx]),
-            'i': np.array(self.intent[idx]),
-            'l': np.array(self.lengths[idx])
+            "x_forward": np.array(self.dataset[idx]),
+            "x_backward": np.array(self.dataset_inverse[idx]),
+            "i": np.array(self.intent[idx]),
+            "l": np.array(self.lengths[idx]),
         }
 
     def __len__(self):
         return len(self.dataset)
 
-class ATISIntentBatchDatasetUtilizeUnlabel(Dataset):
 
-    def __init__(self, query, query_inverse, lengths, intent_gold, intent_re,  re_out, shots=None):
+class ATISIntentBatchDatasetUtilizeUnlabel(Dataset):
+    def __init__(
+        self, query, query_inverse, lengths, intent_gold, intent_re, re_out, shots=None
+    ):
         assert len(query) == len(intent_gold)
         assert len(query) == len(intent_re)
         self.dataset = query
@@ -103,12 +98,11 @@ class ATISIntentBatchDatasetUtilizeUnlabel(Dataset):
             self.intent = list(new_intent)
 
     def __getitem__(self, idx):
-
         return {
-            'x_forward': np.array(self.dataset[idx]),
-            'x_backward': np.array(self.dataset_inverse[idx]),
-            'i': np.array(self.intent[idx]),
-            'l': np.array(self.lengths[idx])
+            "x_forward": np.array(self.dataset[idx]),
+            "x_backward": np.array(self.dataset_inverse[idx]),
+            "i": np.array(self.intent[idx]),
+            "l": np.array(self.lengths[idx]),
         }
 
     def __len__(self):
@@ -116,7 +110,6 @@ class ATISIntentBatchDatasetUtilizeUnlabel(Dataset):
 
 
 class MarryUpIntentBatchDataset(Dataset):
-
     def __init__(self, query, lengths, intent, re_out, shots=None):
         assert len(query) == len(intent)
         if (shots is None) or (shots > len(query)):
@@ -132,20 +125,19 @@ class MarryUpIntentBatchDataset(Dataset):
             self.re_out = list(np.array(re_out)[idxs])
 
     def __getitem__(self, idx):
-
         return {
-            'x': np.array(self.dataset[idx]),
-            'i': np.array(self.intent[idx]),
-            'l': np.array(self.lengths[idx]),
-            're': np.array(self.re_out[idx])
+            "x": np.array(self.dataset[idx]),
+            "i": np.array(self.intent[idx]),
+            "l": np.array(self.lengths[idx]),
+            "re": np.array(self.re_out[idx]),
         }
 
     def __len__(self):
         return len(self.dataset)
 
-class MarryUpIntentBatchDatasetUtilizeUnlabel(Dataset):
 
-    def __init__(self, query, lengths, intent_gold, intent_re,  re_out, shots=None):
+class MarryUpIntentBatchDatasetUtilizeUnlabel(Dataset):
+    def __init__(self, query, lengths, intent_gold, intent_re, re_out, shots=None):
         assert len(query) == len(intent_gold)
         assert len(query) == len(intent_re)
         self.dataset = query
@@ -163,25 +155,27 @@ class MarryUpIntentBatchDatasetUtilizeUnlabel(Dataset):
             self.intent = list(new_intent)
 
     def __getitem__(self, idx):
-
         return {
-            'x': np.array(self.dataset[idx]),
-            'i': np.array(self.intent[idx]),
-            'l': np.array(self.lengths[idx]),
-            're': np.array(self.re_out[idx])
+            "x": np.array(self.dataset[idx]),
+            "i": np.array(self.intent[idx]),
+            "l": np.array(self.lengths[idx]),
+            "re": np.array(self.re_out[idx]),
         }
 
     def __len__(self):
         return len(self.dataset)
 
 
-def make_glove_embed(glove_path, dataset_path, i2t, embed_dim='100'):
+def make_glove_embed(glove_path, dataset_path, i2t, embed_dim="100"):
     glove = {}
-    vecs = [] # use to produce unk
+    vecs = []  # use to produce unk
 
     # load glove
-    with open(os.path.join(glove_path, 'glove.6B.{}d.txt'.format(embed_dim)),
-              'r', encoding='utf-8') as f:
+    with open(
+        os.path.join(glove_path, "glove.6B.{}d.txt".format(embed_dim)),
+        "r",
+        encoding="utf-8",
+    ) as f:
         for line in f.readlines():
             split_line = line.split()
             word = split_line[0]
@@ -202,7 +196,10 @@ def make_glove_embed(glove_path, dataset_path, i2t, embed_dim='100'):
             embed.append(unk)
 
     final_embed = np.array(embed, dtype=float)
-    pickle.dump(final_embed, open(os.path.join(dataset_path, 'glove.{}.emb'.format(embed_dim)), 'wb'))
+    pickle.dump(
+        final_embed,
+        open(os.path.join(dataset_path, "glove.{}.emb".format(embed_dim)), "wb"),
+    )
 
     return
 
@@ -212,86 +209,96 @@ def load_glove_embed(dataset_path, embed_dim):
     :param config:
     :return the numpy array of embedding of task vocabulary: V x D:
     """
-    return pickle.load(open(os.path.join(dataset_path, 'glove.{}.emb'.format(embed_dim)), 'rb'))
+    return pickle.load(
+        open(os.path.join(dataset_path, "glove.{}.emb".format(embed_dim)), "rb")
+    )
 
 
 def load_ds(fname):
     print(os.listdir())
-    with open(fname,'rb') as stream:
+    with open(fname, "rb") as stream:
         ds, dicts = pickle.load(stream)
-    print('Done  loading: ', fname)
-    print('      samples: {:4d}'.format(len(ds['query'])))
-    print('   vocab_size: {:4d}'.format(len(dicts['token_ids'])))
-    print('   slot count: {:4d}'.format(len(dicts['slot_ids'])))
-    print(' intent count: {:4d}'.format(len(dicts['intent_ids'])))
+    print("Done  loading: ", fname)
+    print("      samples: {:4d}".format(len(ds["query"])))
+    print("   vocab_size: {:4d}".format(len(dicts["token_ids"])))
+    print("   slot count: {:4d}".format(len(dicts["slot_ids"])))
+    print(" intent count: {:4d}".format(len(dicts["intent_ids"])))
     return ds, dicts
 
 
-def read_ATIS(mode='train', DATA_DIR = None):
+def read_ATIS(mode="train", DATA_DIR=None):
     # function to read ATIS dataset, calling example:
     # t2i, s2i, in2i, i2t, i2s, i2in, query, slots, intent = read_ATIS(mode='train')
     if DATA_DIR is None:
-        DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'ATIS')
+        DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "ATIS")
 
-    train_ds, dicts = load_ds(os.path.join(DATA_DIR, 'atis.{}.pkl'.format(mode)))
-    test_ds, _ = load_ds(os.path.join(DATA_DIR, 'atis.test.pkl'))
+    train_ds, dicts = load_ds(os.path.join(DATA_DIR, "atis.{}.pkl".format(mode)))
+    test_ds, _ = load_ds(os.path.join(DATA_DIR, "atis.test.pkl"))
     assert dicts == _
 
-    t2i, s2i, in2i = map(dicts.get, ['token_ids', 'slot_ids', 'intent_ids'])
+    t2i, s2i, in2i = map(dicts.get, ["token_ids", "slot_ids", "intent_ids"])
     i2t, i2s, i2in = map(lambda d: {d[k]: k for k in d.keys()}, [t2i, s2i, in2i])
-    query, slots, intent = map(train_ds.get,
-                               ['query', 'slot_labels', 'intent_labels'])
+    query, slots, intent = map(train_ds.get, ["query", "slot_labels", "intent_labels"])
 
     return t2i, s2i, in2i, i2t, i2s, i2in, query, slots, intent, dicts
 
 
-def create_ATIS_toy_dataset(DATA_DIR = None):
-    data_root = os.path.join(os.path.dirname(__file__), '..', 'data')
+def create_ATIS_toy_dataset(DATA_DIR=None):
+    data_root = os.path.join(os.path.dirname(__file__), "..", "data")
     if DATA_DIR is None:
-        DATA_DIR = os.path.join(data_root, 'ATIS')
+        DATA_DIR = os.path.join(data_root, "ATIS")
 
-    train_ds, dicts = load_ds(os.path.join(DATA_DIR, 'atis.{}.pkl'.format('train')))
+    train_ds, dicts = load_ds(os.path.join(DATA_DIR, "atis.{}.pkl".format("train")))
 
     # create a smaller dataset for development
     samples = 20
     sampled_train_ds = {}
-    sampled_train_ds['slot_labels'] = train_ds['slot_labels'][:samples]
-    sampled_train_ds['query'] = train_ds['query'][:samples]
-    sampled_train_ds['intent_labels'] = train_ds['intent_labels'][:samples]
-    pickle.dump((sampled_train_ds, dicts), open(os.path.join(data_root, 'atis.toy.{}.train.pkl'.format(samples)), 'wb'))
+    sampled_train_ds["slot_labels"] = train_ds["slot_labels"][:samples]
+    sampled_train_ds["query"] = train_ds["query"][:samples]
+    sampled_train_ds["intent_labels"] = train_ds["intent_labels"][:samples]
+    pickle.dump(
+        (sampled_train_ds, dicts),
+        open(os.path.join(data_root, "atis.toy.{}.train.pkl".format(samples)), "wb"),
+    )
 
 
 def load_pkl(path):
     print(path)
-    dicts = pickle.load(open(path, 'rb'))
+    dicts = pickle.load(open(path, "rb"))
     return dicts
 
 
-def load_dict_ATIS(DATA_DIR = None):
+def load_dict_ATIS(DATA_DIR=None):
     if DATA_DIR is None:
-        DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'ATIS')
+        DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "ATIS")
 
-    t2i, s2i, in2i, i2t, i2s, i2in, dicts = pickle.load(open(os.path.join(DATA_DIR, 'atis.{}.new.pkl'.format('dicts')), 'rb'))
+    t2i, s2i, in2i, i2t, i2s, i2in, dicts = pickle.load(
+        open(os.path.join(DATA_DIR, "atis.{}.new.pkl".format("dicts")), "rb")
+    )
     return t2i, i2t, in2i, i2in, dicts
 
 
-def load_data_ATIS(mode, DATA_DIR = None):
+def load_data_ATIS(mode, DATA_DIR=None):
     if DATA_DIR is None:
-        DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'ATIS')
+        DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "ATIS")
 
-    query, slots, intent = pickle.load(open(os.path.join(DATA_DIR, 'atis.{}.new.pkl'.format(mode)), 'rb'))
+    query, slots, intent = pickle.load(
+        open(os.path.join(DATA_DIR, "atis.{}.new.pkl".format(mode)), "rb")
+    )
     return query, slots, intent
 
 
-def save_data(query, slots, intent, mode, DATA_DIR = None):
+def save_data(query, slots, intent, mode, DATA_DIR=None):
     if DATA_DIR is None:
-        DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'ATIS')
+        DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "ATIS")
 
-    pickle.dump((query, slots, intent), open(os.path.join(DATA_DIR, 'atis.{}.new.pkl'.format(mode)), 'wb'))
+    pickle.dump(
+        (query, slots, intent),
+        open(os.path.join(DATA_DIR, "atis.{}.new.pkl".format(mode)), "wb"),
+    )
 
-def train_split(query, slots, intent, rate=0.8, DATA_DIR = '../data/ATIS'):
 
-
+def train_split(query, slots, intent, rate=0.8, DATA_DIR="../data/ATIS"):
     lengths = len(query)
     assert lengths == len(slots)
     shuffle_idx = np.arange(lengths)
@@ -303,20 +310,26 @@ def train_split(query, slots, intent, rate=0.8, DATA_DIR = '../data/ATIS'):
     query = query[shuffle_idx]
     slots = slots[shuffle_idx]
     intent = intent[shuffle_idx]
-    train_query = query[: int(lengths*rate)]
-    train_slots = slots[: int(lengths*rate)]
-    train_intent = intent[: int(lengths*rate)]
-    dev_query = query[int(lengths*rate):]
-    dev_slots = slots[int(lengths*rate):]
-    dev_intent = intent[int(lengths*rate):]
-    pickle.dump((train_query, train_slots, train_intent), open(os.path.join(DATA_DIR, 'atis.{}.new.pkl'.format('train')), 'wb'))
-    pickle.dump((dev_query, dev_slots, dev_intent), open(os.path.join(DATA_DIR, 'atis.{}.new.pkl'.format('dev')), 'wb'))
+    train_query = query[: int(lengths * rate)]
+    train_slots = slots[: int(lengths * rate)]
+    train_intent = intent[: int(lengths * rate)]
+    dev_query = query[int(lengths * rate) :]
+    dev_slots = slots[int(lengths * rate) :]
+    dev_intent = intent[int(lengths * rate) :]
+    pickle.dump(
+        (train_query, train_slots, train_intent),
+        open(os.path.join(DATA_DIR, "atis.{}.new.pkl".format("train")), "wb"),
+    )
+    pickle.dump(
+        (dev_query, dev_slots, dev_intent),
+        open(os.path.join(DATA_DIR, "atis.{}.new.pkl".format("dev")), "wb"),
+    )
 
 
 def create_vocabs(iterable, mode):
-    assert mode in ['labels', 'texts']
+    assert mode in ["labels", "texts"]
     vocab = Counter()
-    if mode == 'labels':
+    if mode == "labels":
         vocab = vocab + Counter(list(iterable))
     else:
         for instance in iterable:
@@ -331,94 +344,147 @@ def create_vocabs(iterable, mode):
 
 def load_classification_dataset(dataset, datadir=None):
     if datadir is None:
-        datadir = os.path.join(os.path.dirname(__file__), '..', 'data')
+        datadir = os.path.join(os.path.dirname(__file__), "..", "data")
 
-    assert dataset in ['ATIS', 'MITR', 'SMS', 'SMS0.8', 'SMS0.5', 'SMS0.3', 'SMS0.1', 'TREC', 'Youtube', ]
-    if dataset == 'ATIS':
-        t2i, i2t, in2i, i2in, dicts = load_dict_ATIS(DATA_DIR='{}/ATIS'.format(datadir))
-        query_train, slots_train, intent_train = load_data_ATIS(mode='train', DATA_DIR='{}/ATIS'.format(datadir))
-        query_dev, slots_dev, intent_dev = load_data_ATIS(mode='dev',  DATA_DIR='{}/ATIS'.format(datadir))
-        query_test, slots_test, intent_test = load_data_ATIS(mode='test',  DATA_DIR='{}/ATIS'.format(datadir))
+    assert dataset in [
+        "ATIS",
+        "MITR",
+        "SMS",
+        "SMS0.8",
+        "SMS0.5",
+        "SMS0.3",
+        "SMS0.1",
+        "TREC",
+        "Youtube",
+    ]
+    if dataset == "ATIS":
+        t2i, i2t, in2i, i2in, dicts = load_dict_ATIS(DATA_DIR="{}/ATIS".format(datadir))
+        query_train, slots_train, intent_train = load_data_ATIS(
+            mode="train", DATA_DIR="{}/ATIS".format(datadir)
+        )
+        query_dev, slots_dev, intent_dev = load_data_ATIS(
+            mode="dev", DATA_DIR="{}/ATIS".format(datadir)
+        )
+        query_test, slots_test, intent_test = load_data_ATIS(
+            mode="test", DATA_DIR="{}/ATIS".format(datadir)
+        )
         return {
-            't2i': t2i, 'i2t': i2t, 'in2i': in2i, 'i2in': i2in,
-            'query_train': query_train, 'intent_train': intent_train,
-            'query_dev': query_dev, 'intent_dev': intent_dev,
-            'query_test': query_test, 'intent_test': intent_test,
+            "t2i": t2i,
+            "i2t": i2t,
+            "in2i": in2i,
+            "i2in": i2in,
+            "query_train": query_train,
+            "intent_train": intent_train,
+            "query_dev": query_dev,
+            "intent_dev": intent_dev,
+            "query_test": query_test,
+            "intent_test": intent_test,
         }
 
     else:
-        if 'SMS' in dataset:
-            dataset = 'SMS'
-        return pickle.load(open('{}{}/dataset.pkl'.format(datadir, dataset), 'rb'))
+        if "SMS" in dataset:
+            dataset = "SMS"
+        return pickle.load(open("{}{}/dataset.pkl".format(datadir, dataset), "rb"))
 
 
 def create_classification_dataset(dataset_name):
-    datadir = os.path.join(os.path.dirname(__file__), '..', 'data')
+    datadir = os.path.join(os.path.dirname(__file__), "..", "data")
 
-    if dataset_name == 'TREC':
+    if dataset_name == "TREC":
         res = load_TREC_dataset()
-    elif dataset_name == 'SMS':
+    elif dataset_name == "SMS":
         res = load_SMS_dataset()
-    elif dataset_name == 'ATIS':
+    elif dataset_name == "ATIS":
         print("LOADING ATIS DATASET")
-        res = load_classification_dataset('ATIS')
-        print('CREATE EMBED FILE')
-        make_glove_embed(os.path.join(datadir, 'emb', 'glove.6B'), os.path.join(datadir, dataset_name), res['i2t'])
-        print('SAVING DATASET')
-        pickle.dump(res, open(os.path.join(datadir, dataset_name, 'dataset.pkl'), 'wb'))
+        res = load_classification_dataset("ATIS")
+        print("CREATE EMBED FILE")
+        make_glove_embed(
+            os.path.join(datadir, "emb", "glove.6B"),
+            os.path.join(datadir, dataset_name),
+            res["i2t"],
+        )
+        print("SAVING DATASET")
+        pickle.dump(res, open(os.path.join(datadir, dataset_name, "dataset.pkl"), "wb"))
         return
     else:
-        raise ValueError('WRONG DATASET NAME')
+        raise ValueError("WRONG DATASET NAME")
 
-    print('CREATING VOCAB FILES')
-    data, _rules = res['data'], res['rules']
-    labels = list(data['class'])
-    texts = list(data['text'])
-    texts = [['BOS'] + i.strip().split() + ['EOS'] for i in texts]
-    i2in, in2i  = create_vocabs(labels, 'labels')
-    i2t, t2i = create_vocabs(texts, 'texts')
+    print("CREATING VOCAB FILES")
+    data, _rules = res["data"], res["rules"]
+    labels = list(data["class"])
+    texts = list(data["text"])
+    texts = [["BOS"] + i.strip().split() + ["EOS"] for i in texts]
+    i2in, in2i = create_vocabs(labels, "labels")
+    i2t, t2i = create_vocabs(texts, "texts")
 
-    print('CREATING EMBED FILE')
-    make_glove_embed(os.path.join(datadir, 'emb', 'glove.6B'), os.path.join(datadir, dataset_name), i2t)
+    print("CREATING EMBED FILE")
+    make_glove_embed(
+        os.path.join(datadir, "emb", "glove.6B"),
+        os.path.join(datadir, dataset_name),
+        i2t,
+    )
 
-    print('TRANSFORMING TO INDEX')
-    data = data.groupby('mode')
-    train, dev, test = data.get_group('train'), data.get_group('valid'), data.get_group('test')
+    print("TRANSFORMING TO INDEX")
+    data = data.groupby("mode")
+    train, dev, test = (
+        data.get_group("train"),
+        data.get_group("valid"),
+        data.get_group("test"),
+    )
 
     def to_query_intent(dataset):
-        labels = dataset['class']
-        texts = dataset['text']
-        texts = [['BOS'] + i.strip().split() + ['EOS'] for i in texts]
+        labels = dataset["class"]
+        texts = dataset["text"]
+        texts = [["BOS"] + i.strip().split() + ["EOS"] for i in texts]
         intent = [in2i[i] for i in labels]
         query = [[t2i[j] for j in i] for i in texts]
         return intent, query
-
 
     intent_train, query_train = to_query_intent(train)
     intent_dev, query_dev = to_query_intent(dev)
     intent_test, query_test = to_query_intent(test)
 
-    print('SAVING DATASET')
+    print("SAVING DATASET")
     dataset = {
-        't2i': t2i, 'i2t': i2t, 'in2i': in2i, 'i2in': i2in,
-        'query_train': query_train, 'intent_train': intent_train,
-        'query_dev': query_dev, 'intent_dev': intent_dev,
-        'query_test': query_test, 'intent_test': intent_test,
+        "t2i": t2i,
+        "i2t": i2t,
+        "in2i": in2i,
+        "i2in": i2in,
+        "query_train": query_train,
+        "intent_train": intent_train,
+        "query_dev": query_dev,
+        "intent_dev": intent_dev,
+        "query_test": query_test,
+        "intent_test": intent_test,
     }
-    pickle.dump(dataset, open(os.path.join(datadir, dataset_name, 'dataset.pkl'), 'wb'))
+    pickle.dump(dataset, open(os.path.join(datadir, dataset_name, "dataset.pkl"), "wb"))
 
 
 def decompose_tensor_split(
-    language_tensor, language, word2idx, rank, random_state=1, n_iter_max=100, init='svd'
+    language_tensor,
+    language,
+    word2idx,
+    rank,
+    random_state=1,
+    n_iter_max=100,
+    init="svd",
 ):
-    language_tensor_squashed = language_tensor[np.array([word2idx[i] for i in language])]
+    language_tensor_squashed = language_tensor[
+        np.array([word2idx[i] for i in language])
+    ]
 
-    print('SQUASHED TENSOR SIZE: {}'.format(language_tensor_squashed.shape))
+    print("SQUASHED TENSOR SIZE: {}".format(language_tensor_squashed.shape))
     time_start = time.time()
-    V_split, D1_split, D2_split, rec_error = tensor3_to_factors(language_tensor_squashed, rank=rank,
-                                                     n_iter_max=n_iter_max, init=init, verbose=10, random_state=random_state)
+    V_split, D1_split, D2_split, rec_error = tensor3_to_factors(
+        language_tensor_squashed,
+        rank=rank,
+        n_iter_max=n_iter_max,
+        init=init,
+        verbose=10,
+        random_state=random_state,
+    )
     time_end = time.time()
-    print('time cost', time_end - time_start, 's')
+    print("time cost", time_end - time_start, "s")
 
     Vocab, State, _ = language_tensor.shape
     V_embed_split = np.zeros((Vocab, rank))
@@ -429,10 +495,12 @@ def decompose_tensor_split(
     return V_embed_split, D1_split, D2_split, rec_error
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=str, default='ATIS', help="dataset name, ATIS, TREC, SMS")
+    parser.add_argument(
+        "--dataset", type=str, default="ATIS", help="dataset name, ATIS, TREC, SMS"
+    )
     args = parser.parse_args()
-    assert args.dataset in ['ATIS', 'TREC', 'SMS']
+    assert args.dataset in ["ATIS", "TREC", "SMS"]
 
     create_classification_dataset(args.dataset)

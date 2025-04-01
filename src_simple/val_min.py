@@ -2,8 +2,18 @@ import torch
 from tqdm import tqdm
 from sklearn.metrics import precision_score, recall_score
 
-def val(model, intent_dataloader, epoch, mode='DEV', logger=None, config=None, i2in=None, criterion=torch.nn.CrossEntropyLoss()):
-    assert mode in ['TRAIN', 'DEV', 'TEST', 'INIT']
+
+def val(
+    model,
+    intent_dataloader,
+    epoch,
+    mode="DEV",
+    logger=None,
+    config=None,
+    i2in=None,
+    criterion=torch.nn.CrossEntropyLoss(),
+):
+    assert mode in ["TRAIN", "DEV", "TEST", "INIT"]
 
     avg_loss = 0
     acc = 0
@@ -18,18 +28,17 @@ def val(model, intent_dataloader, epoch, mode='DEV', logger=None, config=None, i
     all_label = []
     with torch.no_grad():
         for batch in pbar_dev:
-
-            if config.model_type == 'Onehot':
-                x = batch['x']
+            if config.model_type == "Onehot":
+                x = batch["x"]
             else:
-                x_forward = batch['x_forward']
-                x_backward = batch['x_backward']
+                x_forward = batch["x_forward"]
+                x_backward = batch["x_backward"]
 
-            label = batch['i'].view(-1)
-            lengths = batch['l']
+            label = batch["i"].view(-1)
+            lengths = batch["l"]
 
             if torch.cuda.is_available():
-                if config.model_type == 'Onehot':
+                if config.model_type == "Onehot":
                     x = x.cuda()
                 else:
                     x_forward = x_forward.cuda()
@@ -38,7 +47,7 @@ def val(model, intent_dataloader, epoch, mode='DEV', logger=None, config=None, i
                 lengths = lengths.cuda()
                 label = label.cuda()
 
-            if config.model_type == 'Onehot':
+            if config.model_type == "Onehot":
                 out = model(x, lengths)
             else:
                 out = model(x_forward, lengths)
@@ -49,18 +58,28 @@ def val(model, intent_dataloader, epoch, mode='DEV', logger=None, config=None, i
             all_pred += list(out.argmax(1).cpu().numpy())
             all_label += list(label.cpu().numpy())
 
-            pbar_dev.set_postfix_str("{} - total right: {}, total entropy loss: {}".format(mode, acc, loss))
+            pbar_dev.set_postfix_str(
+                "{} - total right: {}, total entropy loss: {}".format(mode, acc, loss)
+            )
 
     acc = acc / len(intent_dataloader.dataset)
     avg_loss = avg_loss / len(intent_dataloader.dataset)
     p_micro, r_micro = acc, acc
-    if 'SMS' in config.dataset:
-        p_micro = precision_score(all_label, all_pred, average='binary', pos_label=1)
-        r_micro = recall_score(all_label, all_pred, average='binary', pos_label=1)
+    if "SMS" in config.dataset:
+        p_micro = precision_score(all_label, all_pred, average="binary", pos_label=1)
+        r_micro = recall_score(all_label, all_pred, average="binary", pos_label=1)
 
-    print('Dataset Len: {}'.format(len(intent_dataloader.dataset)))
-    print("{} Epoch: {} | ACC: {}, LOSS: {}, P: {}, R: {}".format(mode, epoch, acc, avg_loss, p_micro, r_micro))
+    print("Dataset Len: {}".format(len(intent_dataloader.dataset)))
+    print(
+        "{} Epoch: {} | ACC: {}, LOSS: {}, P: {}, R: {}".format(
+            mode, epoch, acc, avg_loss, p_micro, r_micro
+        )
+    )
     if logger:
-        logger.add("{} Epoch: {} | ACC: {}, LOSS: {}, P: {}, R: {}".format(mode, epoch, acc, avg_loss,  p_micro, r_micro))
+        logger.add(
+            "{} Epoch: {} | ACC: {}, LOSS: {}, P: {}, R: {}".format(
+                mode, epoch, acc, avg_loss, p_micro, r_micro
+            )
+        )
 
     return acc, avg_loss, p_micro, r_micro

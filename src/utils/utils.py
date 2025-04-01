@@ -5,6 +5,7 @@ import os
 import datetime
 import time
 
+
 def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
@@ -23,8 +24,8 @@ def len_stats(query):
 
     print("max_len: {}, avg_len: {}".format(max_len, avg_len))
 
-def pad_dataset(query, config, pad_idx):
 
+def pad_dataset(query, config, pad_idx):
     lengths = []
     new_query = []
     new_query_inverse = []
@@ -51,7 +52,6 @@ def pad_dataset(query, config, pad_idx):
 
 
 def pad_dataset_1(query, seq_max_len, pad_idx):
-
     lengths = []
     new_query = []
     new_query_inverse = []
@@ -64,8 +64,8 @@ def pad_dataset_1(query, seq_max_len, pad_idx):
         q_inverse = q[::-1]
 
         if length > seq_max_len:
-            q = q[: seq_max_len]
-            q_inverse = q_inverse[: seq_max_len]
+            q = q[:seq_max_len]
+            q_inverse = q_inverse[:seq_max_len]
             length = seq_max_len
         else:
             remain = seq_max_len - length
@@ -80,76 +80,79 @@ def pad_dataset_1(query, seq_max_len, pad_idx):
 
     return new_query, new_query_inverse, lengths
 
+
 def mkdir(path):
     if not os.path.exists(path):
         os.mkdir(path)
 
+
 def create_datetime_str():
     datetime_dt = datetime.datetime.today()
     datetime_str = datetime_dt.strftime("%m%d%H%M%S")
-    datetime_str = datetime_str + '-' + str(time.time())
+    datetime_str = datetime_str + "-" + str(time.time())
     return datetime_str
 
-class Args():
+
+class Args:
     def __init__(self, data):
         self.data = data
         for k, v in data.items():
             setattr(self, k, v)
 
-class Logger():
+
+class Logger:
     def __init__(self):
-        self.record = [] # recored strings
+        self.record = []  # recored strings
 
     def add(self, string):
         assert isinstance(string, str)
-        self.record.append(string+' \n')
+        self.record.append(string + " \n")
 
     def save(self, filename):
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.writelines(self.record)
 
 
 def get_automata_from_seed(args, seed):
-
     dset = args.dataset
-    if 'SMS' in dset:
-        dset = 'SMS'
+    if "SMS" in dset:
+        dset = "SMS"
 
-    if args.automata_path_forward != 'none':
-        root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-        return os.path.join(root, 'data', dset, 'automata', args.automata_path_forward), \
-               os.path.join(root, 'data', dset, 'automata', args.automata_path_backward)
+    if args.automata_path_forward != "none":
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        return os.path.join(
+            root, "data", dset, "automata", args.automata_path_forward
+        ), os.path.join(root, "data", dset, "automata", args.automata_path_backward)
 
-    assert seed in [0,1,2,3]
-    if args.dataset == 'ATIS':
-
+    assert seed in [0, 1, 2, 3]
+    if args.dataset == "ATIS":
         automata_list = [
-            'automata.newrule.split.randomseed150.False.0.0003.0.pkl',
-            'automata.newrule.split.randomseed150.False.0.0003.1.pkl',
-            'automata.newrule.split.randomseed150.False.0.0007.2.pkl',
-            'automata.newrule.split.randomseed150.False.0.0741.3.pkl'
+            "automata.newrule.split.randomseed150.False.0.0003.0.pkl",
+            "automata.newrule.split.randomseed150.False.0.0003.1.pkl",
+            "automata.newrule.split.randomseed150.False.0.0007.2.pkl",
+            "automata.newrule.split.randomseed150.False.0.0741.3.pkl",
         ]
 
         automata_list_reverse = [
-            'automata.newrule.reversed.randomseed150.False.0.0735.0.pkl',
-            'automata.newrule.reversed.randomseed150.False.0.0006.1.pkl',
-            'automata.newrule.reversed.randomseed150.False.0.0735.2.pkl',
-            'automata.newrule.reversed.randomseed150.False.0.0735.3.pkl',
+            "automata.newrule.reversed.randomseed150.False.0.0735.0.pkl",
+            "automata.newrule.reversed.randomseed150.False.0.0006.1.pkl",
+            "automata.newrule.reversed.randomseed150.False.0.0735.2.pkl",
+            "automata.newrule.reversed.randomseed150.False.0.0735.3.pkl",
         ]
 
-    elif args.dataset == 'TREC':
+    elif args.dataset == "TREC":
         automata_list = [
-            'automata.split.randomseed.200.False.0.0021.0.pkl',
-            'automata.split.randomseed.200.False.0.0018.1.pkl',
-            'automata.split.randomseed.200.False.0.0018.2.pkl',
-            'automata.split.randomseed.200.False.0.0021.3.pkl',
+            "automata.split.randomseed.200.False.0.0021.0.pkl",
+            "automata.split.randomseed.200.False.0.0018.1.pkl",
+            "automata.split.randomseed.200.False.0.0018.2.pkl",
+            "automata.split.randomseed.200.False.0.0021.3.pkl",
         ]
 
         automata_list_reverse = [
-            'automata.newrule.reversed.randomseed200.False.0.0354.0.pkl',
-            'automata.newrule.reversed.randomseed200.False.0.0354.1.pkl',
-            'automata.newrule.reversed.randomseed200.False.0.0501.2.pkl',
-            'automata.newrule.reversed.randomseed200.False.0.0354.3.pkl',
+            "automata.newrule.reversed.randomseed200.False.0.0354.0.pkl",
+            "automata.newrule.reversed.randomseed200.False.0.0354.1.pkl",
+            "automata.newrule.reversed.randomseed200.False.0.0501.2.pkl",
+            "automata.newrule.reversed.randomseed200.False.0.0354.3.pkl",
         ]
 
     # elif args.dataset == 'TREC-hotswap':
@@ -168,21 +171,19 @@ def get_automata_from_seed(args, seed):
     #     ]
     #     args.dataset = 'TREC'
 
-
-
-    elif args.dataset  == 'SMS':
+    elif args.dataset == "SMS":
         automata_list = [
-            'automata.split.randomseed.150.False.0.0002.0.pkl',
-            'automata.split.randomseed.150.False.0.0002.1.pkl',
-            'automata.split.randomseed.150.False.0.0003.2.pkl',
-            'automata.split.randomseed.150.False.0.0004.3.pkl',
+            "automata.split.randomseed.150.False.0.0002.0.pkl",
+            "automata.split.randomseed.150.False.0.0002.1.pkl",
+            "automata.split.randomseed.150.False.0.0003.2.pkl",
+            "automata.split.randomseed.150.False.0.0004.3.pkl",
         ]
 
         automata_list_reverse = [
-            'automata.newrule.reversed.randomseed150.False.0.0003.0.pkl',
-            'automata.newrule.reversed.randomseed150.False.0.0003.1.pkl',
-            'automata.newrule.reversed.randomseed150.False.0.0001.2.pkl',
-            'automata.newrule.reversed.randomseed150.False.0.0001.3.pkl'
+            "automata.newrule.reversed.randomseed150.False.0.0003.0.pkl",
+            "automata.newrule.reversed.randomseed150.False.0.0003.1.pkl",
+            "automata.newrule.reversed.randomseed150.False.0.0001.2.pkl",
+            "automata.newrule.reversed.randomseed150.False.0.0001.3.pkl",
         ]
 
     # elif args.dataset  == 'SMS0.8':
@@ -250,16 +251,17 @@ def get_automata_from_seed(args, seed):
     #     ]
     #     args.additional_state = 0
 
-    root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    return os.path.join(root, 'data', dset, 'automata', automata_list[seed]), \
-           os.path.join(root, 'data', dset, 'automata', automata_list_reverse[seed])
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    return os.path.join(
+        root, "data", dset, "automata", automata_list[seed]
+    ), os.path.join(root, "data", dset, "automata", automata_list_reverse[seed])
 
 
 def relu_normalized_NLLLoss(input, target):
     relu = torch.nn.ReLU()
     loss = torch.nn.NLLLoss()
     input = relu(input)
-    input += 1e-4 # add small positive offset to prevent 0
+    input += 1e-4  # add small positive offset to prevent 0
     input = input / torch.sum(input)
     input = torch.log(input)
     loss_val = loss(input, target)
@@ -269,19 +271,16 @@ def relu_normalized_NLLLoss(input, target):
 def even_select_from_portion(L, portion):
     final_nums = int(L * portion)
     interval = 1 / portion
-    idxs = [int(i*interval) for i in range(final_nums)]
+    idxs = [int(i * interval) for i in range(final_nums)]
     return np.array(idxs)
+
 
 def evan_select_from_total_number(L, N):
     assert L >= N
     if N > 0:
         portion = N / L
         interval = 1 / portion
-        idxs = [int(i*interval) for i in range(N)]
+        idxs = [int(i * interval) for i in range(N)]
     else:
         idxs = []
     return np.array(idxs)
-
-
-
-
