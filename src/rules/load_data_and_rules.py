@@ -7,9 +7,7 @@ from pydash.arrays import compact
 from automata_tools import get_word_to_index
 from src.rules.dfa_from_rule import tokenizer
 
-_project_root = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "..", ".."
-)
+_project_root = os.path.join(os.path.dirname(__file__), "..", "..")
 MITR_PATH = os.path.join(_project_root, "data", "MITR")
 SMS_PATH = os.path.join(_project_root, "data", "SMS")
 TREC_PATH = os.path.join(_project_root, "data", "TREC")

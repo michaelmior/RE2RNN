@@ -15,9 +15,9 @@ from automata_tools import (
 )
 from pydash import uniq
 
-from rules.rule_tokenizer import ruleParser
-from rules.fsa_to_tensor import dfa_to_tensor
-from rules.reverse_regex import reverse_regex
+from src.rules.rule_tokenizer import ruleParser
+from src.rules.fsa_to_tensor import dfa_to_tensor
+from src.rules.reverse_regex import reverse_regex
 
 punctuations = [
     ",",
@@ -348,7 +348,7 @@ def mergeWordToIndex(
 
 
 def main():
-    from rules.load_data_and_rules import load_TREC_dataset
+    from src.rules.load_data_and_rules import load_TREC_dataset
 
     wordToIndexFull = load_TREC_dataset()["wordToIndex"]
 
