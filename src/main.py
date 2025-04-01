@@ -14,7 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=0.001, help="learning rate of optimizer")
     parser.add_argument('--max_state', type=int, default=3, help="max state of each FSARNN")
     parser.add_argument('--bz', type=int, default=500, help="batch size")
-    parser.add_argument('--epoch', type=int, default=30, help="max state of each FSARNN")
+    parser.add_argument('--epoch', type=int, default=30, help="max number of epochs")
     parser.add_argument('--seq_max_len', type=int, default=30, help="max length of sequence")
     parser.add_argument('--early_stop', type=int, default=20, help="number of epochs that apply early stopping if dev metric not improve")
     parser.add_argument('--run', type=str, default="integrate", help="run folder name to save model")
