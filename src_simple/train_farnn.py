@@ -59,8 +59,8 @@ def get_init_params(config, in2i, i2in, t2i, automata_path):
         mat, bias = create_mat_and_bias_with_empty_SMS(automata, in2i=in2i, i2in=i2in,)
 
     # for padding
-    pretrain_embed_extend = np.append(pretrained_embed, np.zeros((1, config.embed_dim), dtype=np.float), axis=0)
-    V_embed_extend = np.append(V_embed, np.zeros((1, rank), dtype=np.float), axis=0)
+    pretrain_embed_extend = np.append(pretrained_embed, np.zeros((1, config.embed_dim), dtype=float), axis=0)
+    V_embed_extend = np.append(V_embed, np.zeros((1, rank), dtype=float), axis=0)
 
     # creating language mask for regularization
     n_vocab_extend, _ = V_embed_extend.shape

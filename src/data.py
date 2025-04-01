@@ -205,7 +205,7 @@ def make_glove_embed(glove_path, dataset_path, i2t, embed_dim='100'):
         else:
             embed.append(unk)
 
-    final_embed = np.array(embed, dtype=np.float)
+    final_embed = np.array(embed, dtype=float)
     pickle.dump(final_embed, open(os.path.join(dataset_path, 'glove.{}.emb'.format(embed_dim)), 'wb'))
 
     return
