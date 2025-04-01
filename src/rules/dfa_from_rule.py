@@ -1,8 +1,4 @@
 import sys
-import os
-_project_root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(_project_root)
-
 import time
 import re
 from typing import Set, Dict, Optional, List, cast, Tuple
@@ -42,7 +38,7 @@ SymbolWildcard = 'SymbolWildcard'
 
 
 def matchTokenInSet(token: Optional[str], acceptTokens: Set[str]):
-    if token == None:
+    if token is None:
         return None
     if token in acceptTokens:
         return SymbolWord
@@ -99,11 +95,11 @@ def executor(tokens, startState, finalStates,
                                                currentToken, tokens)
         if matchingResult and matchingResult[0] in finalStates:
             return True
-        if availablePathCount > 1 and matchingResult != None:
+        if availablePathCount > 1 and matchingResult is not None:
             # it is ambiguous now
             # try go on, and see if consume a non wildcard matcher is a right choice
             # (currentState, currentToken, tokens) = matchingResult
-            if matchingResult[1] == None:
+            if matchingResult[1] is None:
                 return False
             initialStateToTry = matchingResult[0]
             tokensToTry = [cast(str, matchingResult[1])] + matchingResult[2]
@@ -112,10 +108,10 @@ def executor(tokens, startState, finalStates,
                 return True
             else:
                 matchingResult = None
-        if matchingResult == None:
+        if matchingResult is None:
             matchingResult = tryConsumeWildCard(transitions[currentState],
                                                 currentToken, tokens)
-            if matchingResult == None:
+            if matchingResult is None:
                 return False  # sadly, no available transition for current token
         (currentState, currentToken, tokens) = matchingResult
     return True
@@ -265,7 +261,7 @@ class NFAFromRegex:
             moreA = BuildAutomata.starStruct(a)
             self.automata.append(BuildAutomata.concatenationStruct(a, moreA))
         elif operator == self.closingBrace:
-            if payload == None:
+            if payload is None:
                 raise BaseException(
                     f"Error processing operator {operator}. payload is None")
             repeatRangeStart, repeatRangeEnd = payload

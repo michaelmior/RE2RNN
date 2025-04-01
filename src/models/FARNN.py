@@ -1,5 +1,6 @@
+import numpy as np
+import torch
 import torch.nn as nn
-from src.utils.utils import *
 
 class FSARNNIntegrateEmptyStateSaperateGRU(nn.Module):
     def __init__(self, pretrained_embed=None, trans_r_1=None, trans_r_2=None, embed_r=None, trans_wildcard=None, config=None, h1=None):
@@ -86,10 +87,7 @@ class FSARNNIntegrateEmptyStateSaperateGRU(nn.Module):
 
     def initialize(self):
         for params in self.parameters():
-            try:
-                nn.init.xavier_normal_(params)
-            except:
-                pass
+            nn.init.xavier_normal_(params)
 
     def Sigmoidal(self, exponent):
         def func(x):

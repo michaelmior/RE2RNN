@@ -1,3 +1,5 @@
+import numpy as np
+import torch
 import torch.nn as nn
 from src.utils.utils import *
 import torch
@@ -96,10 +98,7 @@ class FARNN(nn.Module):
 
     def initialize(self):
         for params in self.parameters():
-            try:
-                nn.init.xavier_normal_(params)
-            except:
-                pass
+            nn.init.xavier_normal_(params)
 
     def Sigmoidal(self, exponent=1):
         def func(x):

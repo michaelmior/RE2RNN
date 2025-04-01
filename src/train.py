@@ -47,7 +47,8 @@ def get_init_params(config, in2i, i2in, t2i, automata_path):
 
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
     pretrained_embed = load_glove_embed(os.path.join(data_dir, dset), config.embed_dim)
-    if config.random_embed: pretrained_embed = np.random.random(pretrained_embed.shape)
+    if config.random_embed:
+        pretrained_embed = np.random.random(pretrained_embed.shape)
     automata_dicts = load_pkl(automata_path)
     automata = automata_dicts['automata']
 
@@ -177,7 +178,6 @@ def train_onehot(args, paths):
                                   mat=mat,
                                   bias=bias)
 
-    mode = 'onehot'
     if args.loss_type == 'CrossEntropy':
         criterion = torch.nn.CrossEntropyLoss()
     elif args.loss_type == 'NormalizeNLL':
@@ -420,7 +420,8 @@ def train_fsa_rnn(args, paths):
     counter = 0
     best_dev_model = deepcopy(model)
 
-    if not intent_dataloader_train: args.epoch = 0
+    if not intent_dataloader_train:
+        args.epoch = 0
 
     for epoch in range(1, args.epoch + 1):
         avg_loss = 0
@@ -509,7 +510,7 @@ def train_marry_up(args):
     # config = Config_MarryUp(args)
 
     dset = load_classification_dataset(args.dataset)
-    t2i, i2t, in2i, i2in = dset['t2i'], dset['i2t'], dset['in2i'], dset['i2in']
+    t2i, i2t, in2i, _i2in = dset['t2i'], dset['i2t'], dset['in2i'], dset['i2in']
     query_train, intent_train = dset['query_train'], dset['intent_train']
     query_dev, intent_dev = dset['query_dev'], dset['intent_dev']
     query_test, intent_test = dset['query_test'], dset['intent_test']
@@ -554,7 +555,8 @@ def train_marry_up(args):
 
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'data', args.dataset)
     pretrained_embed = load_glove_embed(data_dir, args.embed_dim)
-    if args.random_embed: pretrained_embed = np.random.random(pretrained_embed.shape)
+    if args.random_embed:
+        pretrained_embed = np.random.random(pretrained_embed.shape)
 
     # for padding
     pretrain_embed_extend = np.append(pretrained_embed, np.zeros((1, args.embed_dim), dtype=float), axis=0)
@@ -584,7 +586,8 @@ def train_marry_up(args):
     counter = 0
     best_dev_model = deepcopy(model)
     # when no training data, just run a test.
-    if not intent_dataloader_train: args.epoch = 0
+    if not intent_dataloader_train:
+        args.epoch = 0
 
     for epoch in range(1, args.epoch + 1):
         avg_loss = 0

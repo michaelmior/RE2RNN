@@ -2,7 +2,7 @@ import torch
 import seaborn as sns
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
+from sklearn.metrics import confusion_matrix, precision_score, recall_score
 
 
 def val(model, intent_dataloader, epoch, mode='DEV', logger=None, config=None, i2in=None, criterion=torch.nn.CrossEntropyLoss()):
@@ -75,7 +75,7 @@ def val(model, intent_dataloader, epoch, mode='DEV', logger=None, config=None, i
         fig = plt.figure()
         fig.set_size_inches(18, 18)
         cmap = sns.cubehelix_palette(8, start=2, rot=0, dark=0, light=.95, reverse=False)
-        g = sns.heatmap(confusion_mat, annot=True,   cmap=cmap, linewidths=1,
+        _g = sns.heatmap(confusion_mat, annot=True,   cmap=cmap, linewidths=1,
                         linecolor='gray', xticklabels=labels, yticklabels=labels,)
         plt.show()
 

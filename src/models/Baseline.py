@@ -1,6 +1,5 @@
 import torch.nn as nn
 from src.models.net import DAN, CNN
-from src.utils.utils import *
 import torch
 
 class IntentMarryUp(nn.Module):
@@ -77,15 +76,15 @@ class IntentMarryUp(nn.Module):
         B, L, D = input.size()
 
         if self.config.rnn in ['RNN', 'GRU']:
-            out, hn = self.rnn(pack_padded_seq_input)  # B x L x H
+            out, _hn = self.rnn(pack_padded_seq_input)  # B x L x H
             out, output_lengths = torch.nn.utils.rnn.pad_packed_sequence(out, batch_first=True)
 
         elif self.config.rnn == 'LSTM':
-            out, (hn, cn) = self.rnn(pack_padded_seq_input)  # B x L x H
+            out, (_hn, cn) = self.rnn(pack_padded_seq_input)  # B x L x H
             out, output_lengths = torch.nn.utils.rnn.pad_packed_sequence(out, batch_first=True)
 
         else:
-            hn = self.rnn(pack_padded_seq_input)
+            _hn = self.rnn(pack_padded_seq_input)
 
         if self.bidirection and (self.config.rnn in ['RNN', 'LSTM', 'GRU']):
             last_hidden = out[torch.arange(B), output_lengths-1, :]

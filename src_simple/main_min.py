@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../../')
-sys.path.append('../')
 import argparse
 
 from src_simple.train_farnn import train_fsa_rnn, train_onehot

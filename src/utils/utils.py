@@ -2,7 +2,8 @@ import numpy as np
 import random
 import torch
 import os
-import datetime, time
+import datetime
+import time
 
 def set_seed(seed):
     random.seed(seed)
@@ -100,7 +101,7 @@ class Logger():
         self.record = [] # recored strings
 
     def add(self, string):
-        assert type(string) == str
+        assert isinstance(string, str)
         self.record.append(string+' \n')
 
     def save(self, filename):

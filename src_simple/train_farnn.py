@@ -169,7 +169,7 @@ def train_onehot(args, paths):
                                   mat=mat,
                                   bias=bias)
 
-    mode = 'onehot'
+    _mode = 'onehot'
     criterion = torch.nn.CrossEntropyLoss()
 
     if args.optimizer == 'SGD':

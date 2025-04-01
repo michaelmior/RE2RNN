@@ -3,12 +3,8 @@ import os
 import numpy as np
 import pickle
 from collections import Counter
-from src.rules.load_data_and_rules import load_TREC_dataset, load_SMS_dataset, load_rule
-from pydash.arrays import compact
-from automata_tools import NFAtoDFA, DFAtoMinimizedDFA
-from src.rules.dfa_from_rule import NFAFromRegex
-from src.rules.fsa_to_tensor import Automata, drawGraph, dfa_to_tensor
-from src.utils.utils import mkdir, evan_select_from_total_number
+from src.rules.load_data_and_rules import load_TREC_dataset, load_SMS_dataset
+from src.utils.utils import evan_select_from_total_number
 from src.rules.tensor_func import tensor3_to_factors
 import time
 import argparse
@@ -95,7 +91,7 @@ class ATISIntentBatchDatasetUtilizeUnlabel(Dataset):
         self.re_out = re_out
         self.dataset_inverse = query_inverse
 
-        if (shots == None) or (shots > len(query)):
+        if (shots is None) or (shots > len(query)):
             self.intent = intent_gold
         elif shots == 0:
             self.intent = intent_re
@@ -123,7 +119,7 @@ class MarryUpIntentBatchDataset(Dataset):
 
     def __init__(self, query, lengths, intent, re_out, shots=None):
         assert len(query) == len(intent)
-        if (shots == None) or (shots > len(query)):
+        if (shots is None) or (shots > len(query)):
             self.dataset = query
             self.intent = intent
             self.lengths = lengths
@@ -155,7 +151,7 @@ class MarryUpIntentBatchDatasetUtilizeUnlabel(Dataset):
         self.dataset = query
         self.lengths = lengths
         self.re_out = re_out
-        if (shots == None) or (shots > len(query)):
+        if (shots is None) or (shots > len(query)):
             self.intent = intent_gold
         elif shots == 0:
             self.intent = intent_re
@@ -375,7 +371,7 @@ def create_classification_dataset(dataset_name):
         raise ValueError('WRONG DATASET NAME')
 
     print('CREATING VOCAB FILES')
-    data, rules = res['data'], res['rules']
+    data, _rules = res['data'], res['rules']
     labels = list(data['class'])
     texts = list(data['text'])
     texts = [['BOS'] + i.strip().split() + ['EOS'] for i in texts]

@@ -1,4 +1,4 @@
-from pyparsing import Literal, Word, alphas, Optional, OneOrMore, Forward, Group, ZeroOrMore, Literal, Empty, oneOf, nums, ParserElement
+from pyparsing import Literal, Word, alphas, Optional, OneOrMore, Forward, Group, oneOf, nums, ParserElement
 from pydash import flatten_deep
 
 ParserElement.enablePackrat()
@@ -30,8 +30,9 @@ OrStatement = Group(orAbleStatement +
 GroupStatement << Group(Literal("(") + Rule + Literal(")"))
 CaptureGroupStatement << Group(Literal("(") + Literal("?") + Literal("<") + Word(alphas) + Literal(">")+ Rule + Literal(")"))
 Rule << OneOrMore(OrStatement | orAbleStatement | CaptureGroupStatement)
-ruleParser = lambda ruleString: flatten_deep(
-    Rule.parseString(ruleString).asList())
+
+def ruleParser(ruleString):
+    return flatten_deep(Rule.parseString(ruleString).asList())
 
 if __name__ == "__main__":
     # ruleString = "$ * ( can' t | can't ) & * $? talk (&|$)*)"

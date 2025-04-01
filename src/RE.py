@@ -2,7 +2,7 @@ import torch
 from src.models.FARNN_O import IntentIntegrateOnehot
 from src.data import ATISIntentBatchDataset, load_classification_dataset, load_pkl
 from torch.utils.data import DataLoader
-from src.utils.utils import len_stats, pad_dataset, Logger
+from src.utils.utils import len_stats, pad_dataset
 from rules.create_logic_mat_bias import create_mat_and_bias_with_empty_TREC, create_mat_and_bias_with_empty_ATIS, create_mat_and_bias_with_empty_SMS
 import numpy as np
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score
@@ -50,8 +50,8 @@ def REclassifier(model, intent_dataloader, config=None, i2in=None, is_cuda=True)
         fig = plt.figure()
         fig.set_size_inches(8, 8)
         cmap = sns.cubehelix_palette(8, start=2, rot=0, dark=0, light=.95, reverse=False)
-        g = sns.heatmap(confusion_mat, annot=True,   cmap=cmap, linewidths=1,
-                        linecolor='gray', xticklabels=labels, yticklabels=labels,)
+        sns.heatmap(confusion_mat, annot=True,   cmap=cmap, linewidths=1,
+                    linecolor='gray', xticklabels=labels, yticklabels=labels,)
         plt.show()
 
     p_micro = precision_score(all_label, all_pred, average='micro')
@@ -62,8 +62,8 @@ def REclassifier(model, intent_dataloader, config=None, i2in=None, is_cuda=True)
     r_macro = recall_score(all_label, all_pred, average='macro')
     f1_macro = f1_score(all_label, all_pred, average='macro')
 
-    # print('p_micro: {} | r_micro: {} | f1_micro: {}'.format(p_micro, r_micro, f1_micro))
-    # print('p_macro: {} | r_macro: {} | f1_macro: {}'.format(p_macro, r_macro, f1_macro))
+    print('p_micro: {} | r_micro: {} | f1_micro: {}'.format(p_micro, r_micro, f1_micro))
+    print('p_macro: {} | r_macro: {} | f1_macro: {}'.format(p_macro, r_macro, f1_macro))
 
     print(f1_micro)
 
@@ -71,7 +71,6 @@ def REclassifier(model, intent_dataloader, config=None, i2in=None, is_cuda=True)
 
 
 def PredictByRE(args, params=None, dset=None,):
-    logger = Logger()
     if not dset:
         dset = load_classification_dataset(args.dataset)
 
@@ -140,9 +139,6 @@ def PredictByRE(args, params=None, dset=None,):
 
 
 def PredictByRE1(args, params=None, dset=None, gpu=0):
-    logger = Logger()
-    device = torch.device("cuda:{}".format(gpu))
-
     if not dset:
         dset = load_classification_dataset(args.dataset)
 

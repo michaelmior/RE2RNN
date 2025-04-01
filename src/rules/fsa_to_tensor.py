@@ -162,8 +162,8 @@ class Automata:
         f = popen(r"dot -Tpng -o %s.png" % file, 'w')
         try:
             f.write(self.getDotFile())
-        except:
-            raise BaseException("Error creating graph")
+        except Exception as e:
+            raise BaseException("Error creating graph") from e
         finally:
             f.close()
 
@@ -173,7 +173,7 @@ def drawGraph(automata, file="",):
     f = popen(r"dot -Tpng -o %s.png" % file, 'w')
     try:
         f.write(automata.getDotFile())
-    except:
-        raise BaseException("Error creating graph")
+    except Exception as e:
+        raise BaseException("Error creating graph") from e
     finally:
         f.close()

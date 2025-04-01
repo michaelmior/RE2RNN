@@ -1,4 +1,3 @@
-import os
 import pickle
 from rules.fsa_to_tensor import dfa_to_tensor
 import argparse
@@ -14,7 +13,7 @@ def decompose_automata(args):
     dataset = load_classification_dataset(args.dataset_name)
     word2idx = dataset['t2i']
     language_tensor, state2idx, wildcard_mat, language = dfa_to_tensor(merged_automata, word2idx)
-    complete_tensor = language_tensor + wildcard_mat
+    # complete_tensor = language_tensor + wildcard_mat
 
     print('DECOMPOSE SPLIT AUTOMATA')
 

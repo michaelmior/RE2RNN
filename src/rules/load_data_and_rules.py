@@ -39,7 +39,7 @@ def load_rule(filePath: str):
                 # if we are going to load a new set of rules of a tag
                 if tagName != currentTag:
                     # if we were parsing previous set of rules, store them into dict
-                    if currentTag != None:
+                    if currentTag is not None:
 
                         # if currentTag in ['ABBREVIATION', 'HUMAN']:
                         #     ruleOfTags[currentTag] = compact(currentRules)
@@ -51,7 +51,7 @@ def load_rule(filePath: str):
                 rule = line.split('//')[0]
                 currentRules.append(rule.strip())
     # add rules of last tag
-    if currentTag != None:
+    if currentTag is not None:
         # if currentTag in ['ABBREVIATION', 'HUMAN']:
         #     ruleOfTags[currentTag] = compact(currentRules)
         ruleOfTags[currentTag] = compact(currentRules)
