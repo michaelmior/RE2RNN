@@ -115,8 +115,9 @@ def get_automata_from_seed(args, seed):
         dset = 'SMS'
 
     if args.automata_path_forward != 'none':
-        return '../data/{}/automata/{}'.format(dset, args.automata_path_forward), \
-           '../data/{}/automata/{}'.format(dset, args.automata_path_backward)
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        return os.path.join(root, 'data', dset, 'automata', args.automata_path_forward), \
+               os.path.join(root, 'data', dset, 'automata', args.automata_path_backward)
 
     assert seed in [0,1,2,3]
     if args.dataset == 'ATIS':
@@ -248,9 +249,9 @@ def get_automata_from_seed(args, seed):
     #     ]
     #     args.additional_state = 0
 
-    return '../data/{}/automata/{}'.format(dset, automata_list[seed]), \
-           '../data/{}/automata/{}'.format(dset, automata_list_reverse[seed])
-
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    return os.path.join(root, 'data', dset, 'automata', automata_list[seed]), \
+           os.path.join(root, 'data', dset, 'automata', automata_list_reverse[seed])
 
 
 def relu_normalized_NLLLoss(input, target):

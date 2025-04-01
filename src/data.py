@@ -219,7 +219,7 @@ def load_glove_embed(dataset_path, embed_dim):
     return pickle.load(open(os.path.join(dataset_path, 'glove.{}.emb'.format(embed_dim)), 'rb'))
 
 
-def load_ds(fname='../data/ATIS/atis.train.pkl'):
+def load_ds(fname):
     print(os.listdir())
     with open(fname,'rb') as stream:
         ds, dicts = pickle.load(stream)
@@ -231,9 +231,11 @@ def load_ds(fname='../data/ATIS/atis.train.pkl'):
     return ds, dicts
 
 
-def read_ATIS(mode='train', DATA_DIR = '../data/ATIS'):
+def read_ATIS(mode='train', DATA_DIR = None):
     # function to read ATIS dataset, calling example:
     # t2i, s2i, in2i, i2t, i2s, i2in, query, slots, intent = read_ATIS(mode='train')
+    if DATA_DIR is None:
+        DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'ATIS')
 
     train_ds, dicts = load_ds(os.path.join(DATA_DIR, 'atis.{}.pkl'.format(mode)))
     test_ds, _ = load_ds(os.path.join(DATA_DIR, 'atis.test.pkl'))
@@ -247,7 +249,10 @@ def read_ATIS(mode='train', DATA_DIR = '../data/ATIS'):
     return t2i, s2i, in2i, i2t, i2s, i2in, query, slots, intent, dicts
 
 
-def create_ATIS_toy_dataset(DATA_DIR = '../data/ATIS'):
+def create_ATIS_toy_dataset(DATA_DIR = None):
+    data_root = os.path.join(os.path.dirname(__file__), '..', 'data')
+    if DATA_DIR is None:
+        DATA_DIR = os.path.join(data_root, 'ATIS')
 
     train_ds, dicts = load_ds(os.path.join(DATA_DIR, 'atis.{}.pkl'.format('train')))
 
@@ -257,7 +262,7 @@ def create_ATIS_toy_dataset(DATA_DIR = '../data/ATIS'):
     sampled_train_ds['slot_labels'] = train_ds['slot_labels'][:samples]
     sampled_train_ds['query'] = train_ds['query'][:samples]
     sampled_train_ds['intent_labels'] = train_ds['intent_labels'][:samples]
-    pickle.dump((sampled_train_ds, dicts), open('../data/atis.toy.{}.train.pkl'.format(samples), 'wb'))
+    pickle.dump((sampled_train_ds, dicts), open(os.path.join(data_root, 'atis.toy.{}.train.pkl'.format(samples)), 'wb'))
 
 
 def load_pkl(path):
@@ -266,19 +271,26 @@ def load_pkl(path):
     return dicts
 
 
-def load_dict_ATIS(DATA_DIR = '../data/ATIS'):
+def load_dict_ATIS(DATA_DIR = None):
+    if DATA_DIR is None:
+        DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'ATIS')
 
     t2i, s2i, in2i, i2t, i2s, i2in, dicts = pickle.load(open(os.path.join(DATA_DIR, 'atis.{}.new.pkl'.format('dicts')), 'rb'))
     return t2i, i2t, in2i, i2in, dicts
 
 
-def load_data_ATIS(mode, DATA_DIR = '../data/ATIS'):
+def load_data_ATIS(mode, DATA_DIR = None):
+    if DATA_DIR is None:
+        DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'ATIS')
 
     query, slots, intent = pickle.load(open(os.path.join(DATA_DIR, 'atis.{}.new.pkl'.format(mode)), 'rb'))
     return query, slots, intent
 
 
-def save_data(query, slots, intent, mode, DATA_DIR = '../data/ATIS'):
+def save_data(query, slots, intent, mode, DATA_DIR = None):
+    if DATA_DIR is None:
+        DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'ATIS')
+
     pickle.dump((query, slots, intent), open(os.path.join(DATA_DIR, 'atis.{}.new.pkl'.format(mode)), 'wb'))
 
 def train_split(query, slots, intent, rate=0.8, DATA_DIR = '../data/ATIS'):
@@ -321,7 +333,10 @@ def create_vocabs(iterable, mode):
     return i2v, v2i
 
 
-def load_classification_dataset(dataset, datadir='../data/'):
+def load_classification_dataset(dataset, datadir=None):
+    if datadir is None:
+        datadir = os.path.join(os.path.dirname(__file__), '..', 'data')
+
     assert dataset in ['ATIS', 'MITR', 'SMS', 'SMS0.8', 'SMS0.5', 'SMS0.3', 'SMS0.1', 'TREC', 'Youtube', ]
     if dataset == 'ATIS':
         t2i, i2t, in2i, i2in, dicts = load_dict_ATIS(DATA_DIR='{}/ATIS'.format(datadir))
@@ -342,6 +357,8 @@ def load_classification_dataset(dataset, datadir='../data/'):
 
 
 def create_classification_dataset(dataset_name):
+    datadir = os.path.join(os.path.dirname(__file__), '..', 'data')
+
     if dataset_name == 'TREC':
         res = load_TREC_dataset()
     elif dataset_name == 'SMS':
@@ -350,9 +367,9 @@ def create_classification_dataset(dataset_name):
         print("LOADING ATIS DATASET")
         res = load_classification_dataset('ATIS')
         print('CREATE EMBED FILE')
-        make_glove_embed('../data/emb/glove.6B', '../data/{}'.format(dataset_name), res['i2t'])
+        make_glove_embed(os.path.join(datadir, 'emb', 'glove.6B'), os.path.join(datadir, dataset_name), res['i2t'])
         print('SAVING DATASET')
-        pickle.dump(res, open('../data/{}/dataset.pkl'.format(dataset_name), 'wb'))
+        pickle.dump(res, open(os.path.join(datadir, dataset_name, 'dataset.pkl'), 'wb'))
         return
     else:
         raise ValueError('WRONG DATASET NAME')
@@ -366,7 +383,7 @@ def create_classification_dataset(dataset_name):
     i2t, t2i = create_vocabs(texts, 'texts')
 
     print('CREATING EMBED FILE')
-    make_glove_embed('../data/emb/glove.6B', '../data/{}'.format(dataset_name), i2t)
+    make_glove_embed(os.path.join(datadir, 'emb', 'glove.6B'), os.path.join(datadir, dataset_name), i2t)
 
     print('TRANSFORMING TO INDEX')
     data = data.groupby('mode')
@@ -392,7 +409,7 @@ def create_classification_dataset(dataset_name):
         'query_dev': query_dev, 'intent_dev': intent_dev,
         'query_test': query_test, 'intent_test': intent_test,
     }
-    pickle.dump(dataset, open('../data/{}/dataset.pkl'.format(dataset_name), 'wb'))
+    pickle.dump(dataset, open(os.path.join(datadir, dataset_name, 'dataset.pkl'), 'wb'))
 
 
 def decompose_tensor_split(

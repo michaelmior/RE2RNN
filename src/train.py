@@ -1,3 +1,5 @@
+import os
+
 import torch
 from src.models.FARNN import IntentIntegrateSaperate_B, IntentIntegrateSaperateBidirection_B,\
     FSARNNIntegrateEmptyStateSaperateGRU
@@ -43,7 +45,8 @@ def get_init_params(config, in2i, i2in, t2i, automata_path):
     if 'SMS' in config.dataset:
         dset = 'SMS'
 
-    pretrained_embed = load_glove_embed('../data/{}/'.format(dset), config.embed_dim)
+    data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+    pretrained_embed = load_glove_embed(os.path.join(data_dir, dset), config.embed_dim)
     if config.random_embed: pretrained_embed = np.random.random(pretrained_embed.shape)
     automata_dicts = load_pkl(automata_path)
     automata = automata_dicts['automata']
@@ -101,11 +104,10 @@ def get_init_params(config, in2i, i2in, t2i, automata_path):
 
 def save_args_and_results(args, results, loggers):
     print('Saving Args and Results')
-    mkdir('../model/{}'.format(args['run']))
+    model_dir = os.path.join(os.path.dirname(__file__), '..', 'model', args['run'])
+    mkdir(model_dir)
     datetime_str = create_datetime_str()
-    file_save_path = "../model/{}/{}.res".format(
-        args['run'], datetime_str,
-    )
+    file_save_path = os.path.join(model_dir, datetime_str)
     print('Saving Args and Results at: {}'.format(file_save_path))
     pickle.dump({
         'args': args,
@@ -480,10 +482,11 @@ def train_fsa_rnn(args, paths):
 
     # Save the model
     datetime_str = create_datetime_str()
-    model_save_path = "../model/{}/D{:.4f}-T{:.4f}-DI{:.4f}-TI{:.4f}-{}-{}-{}".format(
-        args.run, best_dev_acc, best_dev_test_acc, acc_dev_init, acc_test_init, datetime_str, args.dataset, args.seed
-    )
-    mkdir("../model/{}/".format(args.run))
+    model_dir = os.path.join(os.path.dirname(__file__), '..', 'model', args.run)
+    model_save_path = os.path.join(model_dir, "D{:.4f}-T{:.4f}-DI{:.4f}-TI{:.4f}-{}-{}-{}".format(
+        best_dev_acc, best_dev_test_acc, acc_dev_init, acc_test_init, datetime_str, args.dataset, args.seed
+    ))
+    mkdir(model_dir)
     mkdir(model_save_path)
     print("SAVING MODEL {} .....".format(model_save_path))
     torch.save(model.state_dict(), model_save_path + '.model')
@@ -549,7 +552,8 @@ def train_marry_up(args):
     intent_dataloader_dev = DataLoader(intent_data_dev, batch_size=args.bz) if intent_data_dev else None
     intent_dataloader_test = DataLoader(intent_data_test, batch_size=args.bz)
 
-    pretrained_embed = load_glove_embed('../data/{}/'.format(args.dataset), args.embed_dim)
+    data_dir = os.path.join(os.path.dirname(__file__), '..', 'data', args.dataset)
+    pretrained_embed = load_glove_embed(data_dir, args.embed_dim)
     if args.random_embed: pretrained_embed = np.random.random(pretrained_embed.shape)
 
     # for padding
