@@ -31,7 +31,8 @@ class ATISIntentBatchDataset(Dataset):
             self.intent = intent
             self.lengths = lengths
         else:
-            # idxs = np.random.choice(np.arange(len(query)), size=int(portion* len(query)), replace=False)
+            # idxs = np.random.choice(np.arange(len(query)),
+            #                         size=int(portion* len(query)), replace=False)
             idxs = evan_select_from_total_number(len(query), shots)
             self.dataset = list(np.array(query)[idxs])
             self.intent = list(np.array(intent)[idxs])
@@ -384,7 +385,7 @@ def load_classification_dataset(dataset, datadir=None):
     else:
         if "SMS" in dataset:
             dataset = "SMS"
-        return pickle.load(open("{}{}/dataset.pkl".format(datadir, dataset), "rb"))
+        return pickle.load(open(os.path.join(datadir, dataset, "dataset.pkl"), "rb"))
 
 
 def create_classification_dataset(dataset_name):
