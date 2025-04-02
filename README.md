@@ -1,5 +1,5 @@
 # RE2RNN
-Source code for the EMNLP2020 paper: "[Cold-start and Interpretability: Turning Regular Expressions into Trainable Recurrent Neural Networks](http://faculty.sist.shanghaitech.edu.cn/faculty/tukw/emnlp20reg.pdf)", Chengyue Jiang, Yinggong Zhao, Shanbo Chu, Libin Shen, and Kewei Tu. 
+Source code for the EMNLP2020 paper: "[Cold-start and Interpretability: Turning Regular Expressions into Trainable Recurrent Neural Networks](http://faculty.sist.shanghaitech.edu.cn/faculty/tukw/emnlp20reg.pdf)", Chengyue Jiang, Yinggong Zhao, Shanbo Chu, Libin Shen, and Kewei Tu.
 ## Citation
 ```
 @inproceedings{jiang-etal-2020-cold,
@@ -28,8 +28,8 @@ Source code for the EMNLP2020 paper: "[Cold-start and Interpretability: Turning 
 - pyparsing
 
 ## Data
-Raw dataset files, preprocessed dataset files, glove word embedding matrix, rules for each dataset, and the decomposed automata files can be downloaded here: 
-[Google Drive](https://drive.google.com/file/d/1r8pMu8EwDjys8-6nHFiEJs4QtelhGqY8/view?usp=sharing), 
+Raw dataset files, preprocessed dataset files, glove word embedding matrix, rules for each dataset, and the decomposed automata files can be downloaded here:
+[Google Drive](https://drive.google.com/file/d/1r8pMu8EwDjys8-6nHFiEJs4QtelhGqY8/view?usp=sharing),
 [Tencent Drive](https://share.weiyun.com/V8TxDWui).
 
 You can download and extract the zip file, and replace the original data directory. The directory structure should be:
@@ -51,7 +51,7 @@ You can download and extract the zip file, and replace the original data directo
 │   ├── ....
 ├── imgs
 │   ├── ....
-``` 
+```
 
 If you have done these, you can skip to the training part.
 
@@ -91,7 +91,7 @@ python data.py --dataset ATIS
 
 ### RE to FA
 We turn the regular expressions into a finite automaton using our automata-tools package implemented by (@[linonetwo](https://github.com/linonetwo)).
-This tool is modified based on https://github.com/sdht0/automata-from-regex. 
+This tool is modified based on https://github.com/sdht0/automata-from-regex.
 This package require the 'dot' command for drawing the automata.
 
 Or running the following command to convert REs/reversed RE (for backward direction) to FA.
@@ -150,14 +150,14 @@ python main.py --dataset ATIS --run save_dir --model_type FSARNN --bidirection 0
 --automata_path_forward automata.newrule.split.randomseed150.False.0.0003.0.pkl
 ```
 We also remove some options and unimportant code to provide a cleaner version of code in ```/src_simple```, in which only contains FARNN related code.
-As an example: 
+As an example:
 ```commandline
 python main_min.py --dataset ATIS --run save_dir --model_type FSARNN --beta 0.3
 ```
 
 ## Interpretability and Models.
 You first need to download the FA-RNN models and config files here:
-[Google Drive](https://drive.google.com/file/d/1q_Bxv2ptCuo_-mLKnd25jCYv6yuYlP4k/view?usp=sharing), 
+[Google Drive](https://drive.google.com/file/d/1q_Bxv2ptCuo_-mLKnd25jCYv6yuYlP4k/view?usp=sharing),
 [Tencent Drive](https://share.weiyun.com/lC1TnsIy).
 Please place the files in the ```/model``` directory.
 
@@ -169,15 +169,8 @@ import pickle
 pickle.load(open('1106095843-1604656723.5809364.res', 'rb'))
 ```
 
-Note that some useless hyper-parameters in the config files are cleaned in the final version/simple version, so the config file may not be directly used, just filter out the useless hyper-params. 
+Note that some useless hyper-parameters in the config files are cleaned in the final version/simple version, so the config file may not be directly used, just filter out the useless hyper-params.
 
 
 We provide several examples showing how to convert the trained model parameters back into WFAs, and threshold them into NFA.
 See the file ```jupyter/checkTrainedRules.ipynb```.
-
-
-
-
-
-
-

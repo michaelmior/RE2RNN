@@ -118,7 +118,8 @@ def executor(
     currentToken: Optional[str] = tokens.pop(0)
     while currentState not in finalStates:
         availableTransitions = transitions[currentState]
-        # count if we have ambiguous situation, since wildcard can make DFA sometimes actually a NFA
+        # count if we have ambiguous situation, since wildcard
+        # can make DFA sometimes actually a NFA
         availablePathCount = 0
         for _, pathSet in availableTransitions.items():
             if matchTokenInSet(currentToken, pathSet):
@@ -206,7 +207,8 @@ class NFAFromRegex:
             token = ruleTokens[index]
             if token not in self.allOperators:
                 language.add(token)
-                # if previous automata is standalong (char or a group or so), we concat current automata with previous one
+                # if previous automata is standalong (char or a group or so),
+                # we concat current automata with previous one
                 if (previous not in self.allOperators) or previous in [
                     self.closingBracket
                 ] + self.unaryOperators:
@@ -352,7 +354,16 @@ def main():
 
     wordToIndexFull = load_TREC_dataset()["wordToIndex"]
 
-    rule = "(($ * name & * $ ? a $*)|($ * ( which | what ) $* ( team | group | groups | teams ) $*)|($ * what & * $ ? kind $*)|($ * ( composed | made ) & * $ ? ( from | through | using | by | of ) $*)|($ * what $* called $*)|($ * novel $*)|($ * ( thing | instance | object ) $*)|($ * fear & * $ ? of $*)|($ * name $*)|($ * ( which | what ) & * $ ? ( play | game | movie | book ) $*)|($ * ( which | what ) $* ( organization | trust | company ) $*)|($ * what & * $ ? is $* ( surname | address | name ) $*))"
+    rule = (
+        "(($ * name & * $ ? a $*)|($ * ( which | what ) $* "
+        "( team | group | groups | teams ) $*)|($ * what & * $ ? kind $*)|"
+        "($ * ( composed | made ) & * $ ? ( from | through | using | by | of ) $*)|"
+        "($ * what $* called $*)|($ * novel $*)|($ * ( thing | instance | object ) $*)|"
+        "($ * fear & * $ ? of $*)|($ * name $*)|($ * ( which | what ) & * $ ? "
+        "( play | game | movie | book ) $*)|($ * ( which | what ) $* "
+        "( organization | trust | company ) $*)|($ * what & * $ ? is $* "
+        "( surname | address | name ) $*))"
+    )
     if len(sys.argv) > 1:
         rule = sys.argv[1]
 

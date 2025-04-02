@@ -411,7 +411,8 @@ def train_fsa_rnn(args, paths):
             shots,
         )
     elif args.train_portion == 0:
-        # special case when train portion==0 and do not use unlabel data, should have no data
+        # special case when train portion==0 and do not use
+        # unlabel data, should have no data
         intent_data_train = None
     else:
         intent_data_train = ATISIntentBatchDatasetBidirection(
@@ -791,7 +792,8 @@ def train_marry_up(args):
             shots,
         )
     elif args.train_portion == 0:
-        # special case when train portion==0 and do not use unlabel data, should have no data
+        # special case when train portion==0 and do not use
+        # unlabel data, should have no data
         intent_data_train = None
     else:
         intent_data_train = MarryUpIntentBatchDataset(
@@ -909,20 +911,23 @@ def train_marry_up(args):
                 loss_KL = torch.nn.KLDivLoss()(softmax_scores, softmax_re_tag_teacher)
                 loss = (
                     loss_cross_entropy * args.l1 + loss_KL * (1 - args.l1)
-                )  # in KD, l1 stands for the alpha controlling to learn from true / imitate teacher
+                )  # in KD, l1 stands for the alpha controlling to learn
+                   #from true / imitate teacher
 
             elif args.model_type == "PR":
                 log_softmax_scores = torch.log_softmax(scores, 1)
                 softmax_scores = torch.softmax(scores, 1)
                 product_term = (
                     torch.exp(re_tag - 1) * args.l2
-                )  # in PR, l2 stands for the regularization term, higher l2, harder rule constraint
+                )  # in PR, l2 stands for the regularization term,
+                   # higher l2, harder rule constraint
                 teacher_score = torch.mul(softmax_scores, product_term)
                 softmax_teacher = torch.softmax(teacher_score, 1)
                 loss_KL = torch.nn.KLDivLoss()(log_softmax_scores, softmax_teacher)
                 loss = (
                     loss_cross_entropy * args.l1 + loss_KL * (1 - args.l1)
-                )  # in PR, l1 stands for the alpha controlling to learn from true / imitate teacher
+                )  # in PR, l1 stands for the alpha controlling to learn
+                   # from true / imitate teacher
 
             loss.backward()
             optimizer.step()
@@ -936,7 +941,7 @@ def train_marry_up(args):
 
         acc = acc / len(intent_data_train)
         avg_loss = avg_loss / len(intent_data_train)
-        # print("{} Epoch: {} | ACC: {}, LOSS: {}".format('TRAIN', epoch, acc, avg_loss))
+        # print(f"TRAIN Epoch: {epoch} | ACC: {acc}, LOSS: {avg_loss}")
         logger.add(
             "{} Epoch: {} | ACC: {}, LOSS: {}".format("TRAIN", epoch, acc, avg_loss)
         )

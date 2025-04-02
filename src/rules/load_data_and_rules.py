@@ -16,7 +16,8 @@ Youtube_PATH = os.path.join(_project_root, "data", "Youtube")
 
 def load_rule(filePath: str):
     """
-    Load rule in pd.DataFrame that use Tag name as index, each column contains a rule or None
+    Load rule in pd.DataFrame that use Tag name as index,
+    each column contains a rule or None
 
     ### Example
     location                          None                                  None

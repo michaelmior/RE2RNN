@@ -70,13 +70,15 @@ class CNN(nn.Module):
 
     def forward(self, x):
         """
-        :param input_x: a list size having the number of batch_size elements with the same length
+        :param input_x: a list size having the number of batch_size
+                        elements with the same length
         :return: batch_size X num_aspects tensor
         """
         # Conv & max pool
         x = x.unsqueeze(1)  # dim: (batch_size, 1, max_seq_len, embedding_size)
 
-        # turns to be a list: [ti : i \in kernel_sizes] where ti: tensor of dim([batch, num_kernels, max_seq_len-i+1])
+        # turns to be a list: [ti : i \in kernel_sizes]
+        # where ti: tensor of dim([batch, num_kernels, max_seq_len-i+1])
         x = [F.relu(conv(x)).squeeze(3) for conv in self.conv]
 
         # dim: [(batch_size, num_kernels), ...]*len(kernel_sizes)
