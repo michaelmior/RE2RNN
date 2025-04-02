@@ -1,3 +1,5 @@
 # .git-blame-ignore-revs
 # Reformat with ruff
 958df9d4ef38533e8d1837c2a768baa27c273065
+# Reformat for pre-commit
+0bb2934f176e6382430c3068e68341ea5081f31b
